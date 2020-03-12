@@ -16,6 +16,10 @@ class Sector(models.Model):
         primary_key=True, max_length=64,
         verbose_name=_('Название'),
     )
+    users = models.ManyToManyField(
+        get_user_model(), related_name='sectors',
+        verbose_name=_('Пользователи'), blank=True,
+    )
 
     @property
     def projects_count(self) -> int:
@@ -38,6 +42,10 @@ class Project(models.Model):
         Sector, on_delete=models.CASCADE,
         related_name='projects',
         verbose_name=_('Направление'),
+    )
+    users = models.ManyToManyField(
+        get_user_model(), related_name='projects',
+        verbose_name=_('Пользователи'), blank=True,
     )
 
     @property
@@ -63,7 +71,7 @@ class Subsystem(models.Model):
     )
     users = models.ManyToManyField(
         get_user_model(), related_name='subsystems',
-        verbose_name=_('Пользователи'),
+        verbose_name=_('Пользователи'), blank=True,
     )
 
     @property

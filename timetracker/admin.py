@@ -5,17 +5,17 @@ from timetracker import models
 
 @admin.register(models.Sector)
 class SectorAdmin(admin.ModelAdmin):
-    pass
+    filter_horizontal = 'users',
 
 
 @admin.register(models.Project)
 class ProjectAdmin(admin.ModelAdmin):
-    pass
+    filter_horizontal = 'users',
 
 
 @admin.register(models.Subsystem)
 class SubsystemAdmin(admin.ModelAdmin):
-    pass
+    filter_horizontal = 'sectors', 'users',
 
 
 @admin.register(models.WorkDay)
