@@ -1,0 +1,17 @@
+# Environments
+.venv/
+*.env
+
+# Builds
+[Bb]uild/
+.mypy_cache/
+.pytest_cache/
+
+# Idea
+.idea/
+__pycache__/
+
+# service assets
+data/
+*.sqlite3
+*.db
