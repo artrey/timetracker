@@ -12,4 +12,5 @@ class Query(graphene.ObjectType):
 
     @login_required
     def resolve_sectors(self, info):
+        user = info.context.user
         return models.Sector.objects.all()
