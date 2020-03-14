@@ -31,23 +31,26 @@ function dayToTitle(day) {
 
 export default function DayView({ date, sectors }) {
   const [activities, setActivities] = useState([]);
+  const dt = moment(date);
 
   const addActivity = () => {
     setActivities([...activities, {}]);
   };
 
-  console.log(date);
   return (
     <div className="card day-card">
       <div className="card-header">
         <div className="row align-items-center">
-          <div className="col-sm-2 col-12">
-            {dayToTitle(moment(date).day())}
+          <div className="col-lg-2 col-12">
+            <div className="row">
+              <div className="col-lg-12 col-6">{dayToTitle(dt.day())}</div>
+              <div className="col-lg-12 col-6">{dt.format("DD-MM-YYYY")}</div>
+            </div>
           </div>
-          <div className="col-sm-5 col-12">
+          <div className="col-lg-5 col-12">
             <TimeInput />
           </div>
-          <div className="col-sm-5 col-12">
+          <div className="col-lg-5 col-12">
             <TimeInput />
           </div>
         </div>
@@ -57,7 +60,11 @@ export default function DayView({ date, sectors }) {
           <ActivityView key={a.id} />
         ))}
         <div className="centered">
-          <button type="button" class="btn btn-success" onClick={addActivity}>
+          <button
+            type="button"
+            className="btn btn-success"
+            onClick={addActivity}
+          >
             Добавить деятельность
           </button>
         </div>
