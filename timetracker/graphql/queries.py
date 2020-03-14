@@ -7,7 +7,7 @@ from timetracker.graphql import models as ql_models
 from timetracker import models
 
 
-class Query(graphene.ObjectType):
+class Queries(graphene.ObjectType):
     sectors = graphene.List(ql_models.Sector, description=_('Список направлений'))
 
     @login_required

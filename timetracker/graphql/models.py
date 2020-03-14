@@ -16,3 +16,8 @@ class Project(DjangoObjectType):
 class Subsystem(DjangoObjectType):
     class Meta:
         model = models.Subsystem
+
+
+class Activity(DjangoObjectType):
+    class Meta:
+        model = models.Activity

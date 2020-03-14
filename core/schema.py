@@ -3,11 +3,12 @@ from user import graphql as user
 from timetracker import graphql as timetracker
 
 queries = [
-    timetracker.Query,
+    timetracker.Queries,
 ]
 
 mutations = [
     user.AuthMutations,
+    timetracker.Mutations,
 ]
 
 

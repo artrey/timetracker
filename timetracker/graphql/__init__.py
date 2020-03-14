@@ -1,3 +1,4 @@
-from .queries import Query
+from .queries import Queries
+from .mutations import Mutations
 
-__all__ = Query,
+__all__ = Queries, Mutations,

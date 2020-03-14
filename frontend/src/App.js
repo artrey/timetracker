@@ -1,6 +1,4 @@
 import React from "react";
-import "./App.css";
-
 import { Router } from "@reach/router";
 
 import LoginForm from "./components/LoginForm";
@@ -9,7 +7,7 @@ import ErrorPageView from "./components/ErrorPageView";
 
 export default function App() {
   return (
-    <div className="App">
+    <div className="container">
       <Router>
         <LoginForm path="/login" />
         <WeekView path="/:year/:week" />

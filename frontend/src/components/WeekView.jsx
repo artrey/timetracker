@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import gql from "graphql-tag";
 import { useQuery } from "@apollo/react-hooks";
 import { useNavigate } from "@reach/router";
+import moment from "moment";
 
 import { LoadingView } from "./Loading";
+import DayView from "./DayView";
 
 const SECTORS_GQL = gql`
   query {
@@ -21,14 +23,16 @@ const SECTORS_GQL = gql`
   }
 `;
 
-export default function WeekView({ year = 2020, week = 22 }) {
+function addDays(date, days) {
+  const result = new Date(date);
+  result.setDate(result.getDate() + days);
+  return result;
+}
+
+export default function WeekView({ year = 2020, week = 11 }) {
   const { loading, error, data } = useQuery(SECTORS_GQL);
 
   const navigate = useNavigate();
-
-  console.log(loading);
-  console.log(error);
-  console.log(data);
 
   if (loading) {
     return <LoadingView />;
@@ -38,12 +42,20 @@ export default function WeekView({ year = 2020, week = 22 }) {
     navigate("/login");
   }
 
+  const date = moment()
+    .isoWeekYear(year)
+    .isoWeek(week)
+    .startOf("isoWeek")
+    .toDate();
+
   return (
     <>
       <h1>
         Week view ({year}/{week})
       </h1>
-      {data && data.sectors.map(s => <p key={s.name}>{s.name}</p>)}
+      {Array.of(...Array(7)).map((_, idx) => (
+        <DayView key={idx} date={addDays(date, idx)} />
+      ))}
     </>
   );
 }
