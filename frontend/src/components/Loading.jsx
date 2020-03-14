@@ -1,46 +1,37 @@
 import React from "react";
 import ReactLoading from "react-loading";
 
-function LoadingElement({ widthContainer, heightContainer, width, height }) {
+function LoadingElement({ containerWidth, containerHeight, ...rest }) {
   return (
     <div
       style={{
-        width: widthContainer,
-        height: heightContainer,
+        width: containerWidth,
+        height: containerHeight,
         display: "flex",
         alignItems: "center",
         justifyContent: "center"
       }}
     >
-      <ReactLoading
-        type="spinningBubbles"
-        color="lightblue"
-        height={height}
-        width={width}
-      />
+      <ReactLoading type="spinningBubbles" color="lightblue" {...rest} />
     </div>
   );
 }
 
-function LoadingView() {
+function LoadingView({ ...props }) {
   return (
     <LoadingElement
-      widthContainer="100vw"
-      heightContainer="100vh"
+      containerWidth="100vw"
+      containerHeight="100vh"
       width="10%"
       height="10%"
+      {...props}
     />
   );
 }
 
-function LoadingContent() {
+function LoadingContent({ ...props }) {
   return (
-    <LoadingElement
-      widthContainer="100%"
-      heightContainer="100%"
-      width="100%"
-      height="100%"
-    />
+    <LoadingElement containerWidth="100%" containerHeight="100%" {...props} />
   );
 }
 

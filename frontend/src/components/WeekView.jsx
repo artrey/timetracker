@@ -3,7 +3,7 @@ import gql from "graphql-tag";
 import { useQuery } from "@apollo/react-hooks";
 import { useNavigate } from "@reach/router";
 
-import { LoadingContent, LoadingView } from "./Loading";
+import { LoadingView } from "./Loading";
 
 const SECTORS_GQL = gql`
   query {
@@ -30,13 +30,8 @@ export default function WeekView({ year = 2020, week = 22 }) {
   console.log(error);
   console.log(data);
 
-  if (loading || error) {
-    return (
-      <div style={{ width: 400, height: 500 }}>
-        <LoadingContent />
-      </div>
-    );
-    // return <LoadingView />;
+  if (loading) {
+    return <LoadingView />;
   }
 
   if (error) {
