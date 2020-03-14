@@ -1,3 +1,7 @@
+.centered {
+  text-align: center;
+}
+
 @media screen and (max-width: 991px) {
   .vertical-offset-lg {
     margin-top: 1em;

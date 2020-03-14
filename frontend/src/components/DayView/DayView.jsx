@@ -66,7 +66,7 @@ export default function DayView({ date, sectors }) {
             className="btn btn-success"
             onClick={addActivity}
           >
-            Добавить деятельность
+            ＋ Добавить деятельность
           </button>
         </div>
       </div>

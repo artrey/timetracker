@@ -9,10 +9,11 @@ import { setToken } from "../token";
 export default function LoginForm() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [errors, setErrors] = useState([]);
 
   const navigate = useNavigate();
 
-  const [login, { loading, error }] = useMutation(gql`
+  const [login, { loading }] = useMutation(gql`
     mutation login($username: String!, $password: String!) {
       login(username: $username, password: $password) {
         token
@@ -31,6 +32,12 @@ export default function LoginForm() {
       }
     } catch (ex) {
       console.log(ex);
+      console.log(ex.graphQLErrors);
+      if (ex.graphQLErrors && ex.graphQLErrors.length > 0) {
+        setErrors(ex.graphQLErrors.map(err => err.message));
+      } else {
+        setErrors([ex.message]);
+      }
     }
   }
 
@@ -55,8 +62,7 @@ export default function LoginForm() {
           Войти
         </button>
       </p>
-      {error &&
-        error.graphQLErrors.map(err => <p key={err.message}>{err.message}</p>)}
+      {errors && errors.map(err => <p key={err}>{err}</p>)}
     </form>
   );
 }
