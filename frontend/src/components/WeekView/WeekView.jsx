@@ -68,7 +68,7 @@ export default function WeekView({ year, week }) {
         <div className="col-1">
           <button
             type="button"
-            className="btn btn-light"
+            className="btn btn-light change-week-button-left"
             onClick={changeWeek(-1)}
           >
             <span className="change-week">{"<"}</span>

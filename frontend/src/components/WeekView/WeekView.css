@@ -1,3 +1,7 @@
 .change-week {
   font-size: 2em;
 }
+
+.change-week-button-left {
+  float: right;
+}
