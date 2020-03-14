@@ -35,14 +35,19 @@ class ProjectAdmin(admin.ModelAdmin):
 
 @admin.register(models.Subsystem)
 class SubsystemAdmin(admin.ModelAdmin):
-    list_display = 'name', 'project', 'sector',
-    list_filter = 'project', 'project__sector',
+    list_display = 'name', 'project_name', 'sector',
+    list_filter = 'project__name', 'project__sector',
     filter_horizontal = 'users',
 
     def sector(self, obj: models.Subsystem) -> models.Sector:
         return obj.project.sector
     sector.short_description = _('направление')
     sector.admin_order_field = 'project__sector'
+
+    def project_name(self, obj: models.Subsystem) -> str:
+        return obj.project.name
+    project_name.short_description = _('проект')
+    project_name.admin_order_field = 'project__name'
 
 
 @admin.register(models.WorkDay)

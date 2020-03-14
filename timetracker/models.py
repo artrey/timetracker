@@ -1,9 +1,24 @@
+import uuid
 from datetime import timedelta
 
 from django.contrib.auth import get_user_model
 from django.core.validators import MaxValueValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+
+from timetracker.utils import time2timedelta
+
+
+class BaseUuidModel(models.Model):
+    class Meta:
+        abstract = True
+
+    id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False,
+        verbose_name=_('Уникальный идентификатор'),
+    )
 
 
 class Sector(models.Model):
@@ -29,7 +44,7 @@ class Sector(models.Model):
         return self.name
 
 
-class Project(models.Model):
+class Project(BaseUuidModel):
     class Meta:
         verbose_name = _('проект')
         verbose_name_plural = _('проекты')
@@ -56,7 +71,7 @@ class Project(models.Model):
         return f'{self.name} / {self.sector}'
 
 
-class Subsystem(models.Model):
+class Subsystem(BaseUuidModel):
     class Meta:
         verbose_name = _('подсистема')
         verbose_name_plural = _('подсистемы')
@@ -83,7 +98,7 @@ class Subsystem(models.Model):
         return f'{self.name} / {self.project}'
 
 
-class WorkDay(models.Model):
+class WorkDay(BaseUuidModel):
     class Meta:
         verbose_name = _('рабочий день')
         verbose_name_plural = _('рабочие дни')
@@ -92,11 +107,6 @@ class WorkDay(models.Model):
     day = models.DateField(verbose_name=_('День'))
     start = models.TimeField(verbose_name=_('Начало'))
     finish = models.TimeField(verbose_name=_('Конец'))
-    subsystem = models.ForeignKey(
-        Subsystem, on_delete=models.CASCADE,
-        related_name='work_days',
-        verbose_name=_('Подсистема'),
-    )
     user = models.ForeignKey(
         get_user_model(), on_delete=models.CASCADE,
         related_name='work_days',
@@ -112,15 +122,18 @@ class WorkDay(models.Model):
         super().save(force_insert, force_update, using, update_fields)
 
     @property
+    def duration(self) -> timedelta:
+        return time2timedelta(self.finish) - time2timedelta(self.start)
+
+    @property
     def activities_count(self) -> int:
         return self.activities.count()
 
     def __str__(self) -> str:
-        return f'{self.user} | {self.day} {self.start}-{self.finish}' \
-               f' [{self.subsystem}]'
+        return f'{self.user} | {self.day} {self.start}-{self.finish}'
 
 
-class Activity(models.Model):
+class Activity(BaseUuidModel):
     class Meta:
         verbose_name = _('деятельность')
         verbose_name_plural = _('деятельности')
@@ -139,10 +152,15 @@ class Activity(models.Model):
         related_name='activities',
         verbose_name=_('Рабочий день'),
     )
+    subsystem = models.ForeignKey(
+        Subsystem, on_delete=models.CASCADE,
+        related_name='work_days',
+        verbose_name=_('Подсистема'),
+    )
     created_at = models.DateTimeField(
         auto_now_add=True,
         verbose_name=_('Время создания'),
     )
 
     def __str__(self) -> str:
-        return f'{self.time} | {self.work_day}'
+        return f'{self.work_day} | {self.time} of {self.work_day.duration}'
