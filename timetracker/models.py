@@ -53,7 +53,7 @@ class Project(models.Model):
         return self.subsystems.count()
 
     def __str__(self) -> str:
-        return self.name
+        return f'{self.name} / {self.sector}'
 
 
 class Subsystem(models.Model):
@@ -65,9 +65,10 @@ class Subsystem(models.Model):
     name = models.CharField(
         max_length=64, verbose_name=_('Название'),
     )
-    sectors = models.ManyToManyField(
-        Project, related_name='subsystems',
-        verbose_name=_('Проекты'),
+    project = models.ForeignKey(
+        Project, on_delete=models.CASCADE,
+        related_name='subsystems',
+        verbose_name=_('Проект'),
     )
     users = models.ManyToManyField(
         get_user_model(), related_name='subsystems',
@@ -75,15 +76,11 @@ class Subsystem(models.Model):
     )
 
     @property
-    def sectors_count(self) -> int:
-        return self.sectors.count()
-
-    @property
     def work_days_count(self) -> int:
         return self.work_days.count()
 
     def __str__(self) -> str:
-        return self.name
+        return f'{self.name} / {self.project}'
 
 
 class WorkDay(models.Model):
@@ -119,8 +116,8 @@ class WorkDay(models.Model):
         return self.activities.count()
 
     def __str__(self) -> str:
-        return f'{self.day} {self.start}-{self.finish}' \
-               f' [{self.user} / {self.subsystem}]'
+        return f'{self.user} | {self.day} {self.start}-{self.finish}' \
+               f' [{self.subsystem}]'
 
 
 class Activity(models.Model):
