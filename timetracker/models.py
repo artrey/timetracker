@@ -91,8 +91,8 @@ class Subsystem(BaseUuidModel):
     )
 
     @property
-    def work_days_count(self) -> int:
-        return self.work_days.count()
+    def activities_count(self) -> int:
+        return self.activities.count()
 
     def __str__(self) -> str:
         return f'{self.name} / {self.project}'
@@ -154,7 +154,7 @@ class Activity(BaseUuidModel):
     )
     subsystem = models.ForeignKey(
         Subsystem, on_delete=models.CASCADE,
-        related_name='work_days',
+        related_name='activities',
         verbose_name=_('Подсистема'),
     )
     created_at = models.DateTimeField(
