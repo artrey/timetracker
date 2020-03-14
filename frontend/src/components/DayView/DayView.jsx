@@ -7,6 +7,7 @@ import TimeInput from "../TimeInput";
 import ActivityView from "../ActivityView";
 
 import "./DayView.css";
+import "../common.css";
 
 function dayToTitle(day) {
   switch (day) {
@@ -47,10 +48,10 @@ export default function DayView({ date, sectors }) {
               <div className="col-lg-12 col-6">{dt.format("DD-MM-YYYY")}</div>
             </div>
           </div>
-          <div className="col-lg-5 col-12">
+          <div className="col-lg-5 col-12 vertical-offset-lg">
             <TimeInput />
           </div>
-          <div className="col-lg-5 col-12">
+          <div className="col-lg-5 col-12 vertical-offset-lg">
             <TimeInput />
           </div>
         </div>

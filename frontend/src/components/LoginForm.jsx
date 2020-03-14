@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useMutation } from "@apollo/react-hooks";
 import gql from "graphql-tag";
 import { useNavigate } from "@reach/router";
+import moment from "moment";
 
 import { setToken } from "../token";
 
@@ -12,8 +13,8 @@ export default function LoginForm() {
   const navigate = useNavigate();
 
   const [login, { loading, error }] = useMutation(gql`
-    mutation tokenAuth($username: String!, $password: String!) {
-      tokenAuth(username: $username, password: $password) {
+    mutation login($username: String!, $password: String!) {
+      login(username: $username, password: $password) {
         token
       }
     }
@@ -23,9 +24,10 @@ export default function LoginForm() {
     e.preventDefault();
     try {
       const { data } = await login({ variables: { username, password } });
-      if (data && data.tokenAuth) {
-        setToken(data.tokenAuth.token);
-        navigate("/2020/12");
+      if (data && data.login) {
+        setToken(data.login.token);
+        const date = moment();
+        navigate(`/${date.isoWeekYear()}/${date.isoWeek()}`);
       }
     } catch (ex) {
       console.log(ex);
