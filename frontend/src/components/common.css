@@ -2,6 +2,10 @@
   text-align: center;
 }
 
+.no-box-shadow:focus {
+  box-shadow: none;
+}
+
 @media screen and (max-width: 991px) {
   .vertical-offset-lg {
     margin-top: 1em;
