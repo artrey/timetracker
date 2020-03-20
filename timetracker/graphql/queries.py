@@ -37,9 +37,9 @@ class Queries(graphene.ObjectType):
     )
 
     # @login_required
-    def resolve_week(self, info, year, week):
+    def resolve_week(self, info, year: int, week: int):
         user = info.context.user
-        dt = week2date(year, week)
+        dt = week2date(year, week - 1)
         return ql_models.Week(dt, models.WorkDay.objects.filter(
             day__gte=dt, day__lt=dt + timedelta(days=7), user=user
         ))
