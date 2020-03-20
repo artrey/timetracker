@@ -40,8 +40,12 @@ class Sector(models.Model):
     def projects_count(self) -> int:
         return self.projects.count()
 
-    def __str__(self) -> str:
+    @property
+    def full_name(self) -> str:
         return self.name
+
+    def __str__(self) -> str:
+        return self.full_name
 
 
 class Project(BaseUuidModel):
@@ -67,8 +71,12 @@ class Project(BaseUuidModel):
     def subsystems_count(self) -> int:
         return self.subsystems.count()
 
+    @property
+    def full_name(self) -> str:
+        return f'{self.sector.full_name} / {self.name}'
+
     def __str__(self) -> str:
-        return f'{self.name} / {self.sector}'
+        return self.full_name
 
 
 class Subsystem(BaseUuidModel):
@@ -94,8 +102,12 @@ class Subsystem(BaseUuidModel):
     def activities_count(self) -> int:
         return self.activities.count()
 
+    @property
+    def full_name(self) -> str:
+        return f'{self.project.full_name} / {self.name}'
+
     def __str__(self) -> str:
-        return f'{self.name} / {self.project}'
+        return self.full_name
 
 
 class WorkDay(BaseUuidModel):
@@ -161,6 +173,14 @@ class Activity(BaseUuidModel):
         auto_now_add=True,
         verbose_name=_('Время создания'),
     )
+
+    @property
+    def hours(self) -> int:
+        return self.time.total_seconds() // 3600
+
+    @property
+    def minutes(self) -> int:
+        return self.time.total_seconds() % 3600 // 60
 
     def __str__(self) -> str:
         return f'{self.work_day} | {self.time} of {self.work_day.duration}'

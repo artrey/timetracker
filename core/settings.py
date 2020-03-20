@@ -29,6 +29,11 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 CORS_ORIGIN_ALLOW_ALL = True
 
+INTERNAL_IPS = [
+    '127.0.0.1',
+    'localhost',
+]
+
 # Application definition
 INSTALLED_APPS = [
     'admin_site.apps.AdminSiteConfig',  # 'django.contrib.admin',
@@ -38,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',  # Required for GraphiQL
     'corsheaders',
+    'debug_toolbar',
     'user',
     'graphene_django',
     'timetracker',
@@ -52,6 +58,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'core.urls'
@@ -142,3 +149,9 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+if DEBUG:
+    import logging
+    logging.basicConfig()
+    import nplusone
+    nplusone.show_nplusones()
