@@ -19,13 +19,7 @@ function LoadingElement({ containerWidth, containerHeight, ...rest }) {
 
 function LoadingView({ ...props }) {
   return (
-    <LoadingElement
-      containerWidth="100vw"
-      containerHeight="100vh"
-      width="10%"
-      height="10%"
-      {...props}
-    />
+    <LoadingElement containerWidth="100%" width="20%" height="20%" {...props} />
   );
 }
 
