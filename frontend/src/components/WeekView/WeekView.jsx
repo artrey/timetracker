@@ -1,30 +1,14 @@
 import React, { useState } from "react";
-import gql from "graphql-tag";
 import { useQuery } from "@apollo/react-hooks";
 import { useNavigate } from "@reach/router";
 import moment from "moment";
 
 import { LoadingView } from "../Loading";
 import DayView from "../DayView";
+import { SECTORS_GQL, WEEK_GQL } from "./queries";
 
 import "./WeekView.css";
 import "../common.css";
-
-const SECTORS_GQL = gql`
-  query {
-    sectors {
-      name
-      projects {
-        id
-        name
-        subsystems {
-          id
-          name
-        }
-      }
-    }
-  }
-`;
 
 function addDays(date, days) {
   const result = new Date(date);
@@ -36,17 +20,27 @@ export default function WeekView({ year, week }) {
   year = year || moment().isoWeekYear();
   week = week || moment().isoWeek();
 
-  const { loading, error, data } = useQuery(SECTORS_GQL);
+  const {
+    loading: subsystemsLoading,
+    error: subsystemsError,
+    data: subsystemsData
+  } = useQuery(SECTORS_GQL);
+
+  const { loading, error, data } = useQuery(WEEK_GQL, {
+    variables: { year, week }
+  });
 
   const navigate = useNavigate();
 
-  if (loading) {
+  if (error || subsystemsError) {
+    navigate("/login");
+  }
+
+  if (loading || subsystemsLoading) {
     return <LoadingView />;
   }
 
-  if (error) {
-    navigate("/login");
-  }
+  const { firstDay, days } = data.week;
 
   const date = moment()
     .isoWeekYear(year)
@@ -94,9 +88,23 @@ export default function WeekView({ year, week }) {
           </button>
         </div>
       </div>
-      {Array.of(...Array(7)).map((_, idx) => (
-        <DayView key={idx} date={addDays(date, idx)} />
-      ))}
+      {Array.of(...Array(7)).map((_, idx) => {
+        const day = addDays(firstDay, idx);
+        const momentDay = moment(day).format("YYYYMMDD");
+        const workDay = days.find(
+          d => moment(d.day).format("YYYYMMDD") === momentDay
+        );
+        return (
+          <DayView
+            key={momentDay}
+            date={day}
+            start={workDay ? workDay.start : null}
+            finish={workDay ? workDay.finish : null}
+            activities={workDay ? workDay.activities : []}
+            subsystems={subsystemsData.subsystems}
+          />
+        );
+      })}
     </>
   );
 }

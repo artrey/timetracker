@@ -30,15 +30,22 @@ function dayToTitle(day) {
   }
 }
 
-export default function DayView({ date, sectors }) {
-  const [activities, setActivities] = useState([]);
-
+export default function DayView({
+  date,
+  start,
+  finish,
+  activities,
+  subsystems
+}) {
   const dt = moment(date);
-  const collapsed = moment().format("YYYYMMDD") !== dt.format("YYYYMMDD");
-  const blockId = `block-${dt.format("YYYYMMDD")}`;
+  const momentDt = dt.format("YYYYMMDD");
+  const collapsed = moment().format("YYYYMMDD") !== momentDt;
+  const blockId = `block-${momentDt}`;
+  const momentStart = start ? moment(start, "HH:mm:ss") : moment();
+  const momentFinish = finish ? moment(finish, "HH:mm:ss") : moment();
 
   const addActivity = () => {
-    setActivities([...activities, {}]);
+    console.log("add activity");
   };
 
   return (
@@ -72,17 +79,31 @@ export default function DayView({ date, sectors }) {
             </div>
           </div>
           <div className="col-lg-5 col-12 vertical-offset-lg">
-            <TimeInput />
+            <TimeInput
+              initialHour={momentStart.format("HH")}
+              initialMinute={momentStart.format("mm")}
+            />
           </div>
           <div className="col-lg-5 col-12 vertical-offset-lg">
-            <TimeInput />
+            <TimeInput
+              initialHour={momentFinish.format("HH")}
+              initialMinute={momentFinish.format("mm")}
+            />
           </div>
         </div>
       </div>
       <div id={blockId} className={`collapse ${collapsed ? "" : "show"}`}>
         <div className="card-body">
           {activities.map(a => (
-            <ActivityView key={a.id} sectors={sectors} onRemove={console.log} />
+            <ActivityView
+              key={a.id}
+              subsystems={subsystems}
+              onRemove={console.log}
+              subsystemId={a.subsystem.id}
+              comment={a.comment}
+              hours={a.hours}
+              minutes={a.minutes}
+            />
           ))}
           <div className="centered">
             <button

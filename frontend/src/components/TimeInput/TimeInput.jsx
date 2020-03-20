@@ -14,8 +14,9 @@ export default function TimeInput({ initialHour, initialMinute }) {
   };
 
   const timeString = () => {
-    if (hour === 0 && minute === 0) return "00:00";
-    return hour && minute ? `${hour}:${minute}` : null;
+    const h = hour === 0 ? "00" : hour;
+    const m = minute === 0 ? "00" : minute;
+    return h && m ? `${h}:${m}` : null;
   };
 
   return <TimePicker onTimeChange={onTimeChange} time={timeString()} />;
