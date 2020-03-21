@@ -1,3 +1,4 @@
+import datetime
 from datetime import timedelta
 
 from django.db.models import Q
@@ -8,6 +9,15 @@ from graphql_jwt.decorators import login_required
 from timetracker.graphql import models as ql_models
 from timetracker import models
 from timetracker.utils import week2date
+
+
+def get_work_days(**filters):
+    return models.WorkDay.objects.prefetch_related(
+        'activities',
+        'activities__subsystem',
+        'activities__subsystem__project',
+        'activities__subsystem__project__sector',
+    ).filter(**filters)
 
 
 class Queries(graphene.ObjectType):
@@ -29,17 +39,31 @@ class Queries(graphene.ObjectType):
         return [ql_models.Subsystem(id=s.id, full_name=s.full_name)
                 for s in subsystems]
 
-    week = graphene.Field(
-        ql_models.Week,
-        year=graphene.Int(required=True, description=_('Год')),
-        week=graphene.Int(required=True, description=_('Неделя')),
-        description=_('Список дней на неделе')
+    work_day = graphene.Field(
+        ql_models.WorkDay,
+        day=graphene.Date(required=True, description=_('День')),
+        description=_('Рабочий день')
     )
 
     # @login_required
-    def resolve_week(self, info, year: int, week: int):
+    def resolve_work_day(self, info, day: datetime.date):
         user = info.context.user
-        dt = week2date(year, week - 1)
-        return ql_models.Week(dt, models.WorkDay.objects.filter(
-            day__gte=dt, day__lt=dt + timedelta(days=7), user=user
-        ))
+        obj, _ = models.WorkDay.objects.get_or_create(
+            day=day, user=user, defaults={
+                'start': datetime.time(),
+                'finish': datetime.time(),
+            }
+        )
+        return obj
+
+    work_days = graphene.List(
+        ql_models.WorkDay,
+        since=graphene.Date(required=True, description=_('Начало')),
+        to=graphene.Date(required=True, description=_('Конец')),
+        description=_('Список дней за период')
+    )
+
+    # @login_required
+    def resolve_work_days(self, info, since: datetime.date, to: datetime.date):
+        user = info.context.user
+        return get_work_days(day__gte=since, day__lte=to, user=user)

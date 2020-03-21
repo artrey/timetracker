@@ -22,8 +22,3 @@ class Activity(DjangoObjectType):
     hours = graphene.Int(source='hours')
     minutes = graphene.Int(source='minutes')
     subsystem = graphene.Field(Subsystem, source='subsystem')
-
-
-class Week(graphene.ObjectType):
-    first_day = graphene.Date()
-    days = graphene.List(WorkDay)

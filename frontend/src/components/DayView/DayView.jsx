@@ -1,10 +1,13 @@
 import React, { useState } from "react";
 import gql from "graphql-tag";
-import { useQuery } from "@apollo/react-hooks";
+import { useQuery, useMutation } from "@apollo/react-hooks";
 import moment from "moment";
 
+import { LoadingView } from "../Loading";
 import TimeInput from "../TimeInput";
 import ActivityView from "../ActivityView";
+
+import { GET_WORK_DAY, UPDATE_WORK_DAY, UPDATE_ACTIVITY } from "./graphql";
 
 import "./DayView.css";
 import "../common.css";
@@ -30,23 +33,59 @@ function dayToTitle(day) {
   }
 }
 
-export default function DayView({
-  date,
-  start,
-  finish,
-  activities,
-  subsystems
-}) {
-  const dt = moment(date);
+function dateToString(date) {
+  return moment(date).format("YYYY-MM-DD");
+}
+
+export default function DayView({ day, subsystems }) {
+  // const [errors, setErrors] = useState([]);
+  // const [uid, setUid] = useState(id);
+  // // const [activities, setActivities] = useState(initialActivities);
+
+  const { loading, error, data } = useQuery(GET_WORK_DAY, {
+    variables: { day: dateToString(day) }
+  });
+  const [updateWorkDay] = useMutation(UPDATE_WORK_DAY);
+  const [updateActivity] = useMutation(UPDATE_ACTIVITY);
+
+  if (loading) {
+    return <LoadingView width="10vw" height="10vh" />;
+  }
+
+  if (error) {
+    return <div>{error.message}</div>;
+  }
+
+  const dt = moment(day);
   const momentDt = dt.format("YYYYMMDD");
   const collapsed = moment().format("YYYYMMDD") !== momentDt;
   const blockId = `block-${momentDt}`;
-  const momentStart = start ? moment(start, "HH:mm:ss") : moment();
-  const momentFinish = finish ? moment(finish, "HH:mm:ss") : moment();
+  const start = moment(data.workDay.start, "HH:mm:ss");
+  const finish = moment(data.workDay.finish, "HH:mm:ss");
 
-  const addActivity = () => {
-    console.log("add activity");
-  };
+  // const updateWorkDay = async () => {
+  //   // const { data } = await updateWorkDayMutation({
+  //   //   variables: { day, start, finish }
+  //   // });
+  //   // setUid(data.workDay.id);
+  //   // return data.workDay.id;
+  // };
+
+  // const updateActivity = async (subsystemId, time, comment) => {
+  //   // try {
+  //   //   const workDayId = uid ? uid : await updateWorkDay();
+  //   //   const { data } = await updateActivityMutation({
+  //   //     variables: { workDay: workDayId, subsystem: subsystemId, time, comment }
+  //   //   });
+  //   //   const activity = activities.find(a => a.id === data.activity.id);
+  //   // } catch (ex) {
+  //   //   if (ex.graphQLErrors && ex.graphQLErrors.length > 0) {
+  //   //     setErrors(ex.graphQLErrors.map(err => err.message));
+  //   //   } else {
+  //   //     setErrors([ex.message]);
+  //   //   }
+  //   // }
+  // };
 
   return (
     <div className="card day-card">
@@ -80,36 +119,33 @@ export default function DayView({
           </div>
           <div className="col-lg-5 col-12 vertical-offset-lg">
             <TimeInput
-              initialHour={momentStart.format("HH")}
-              initialMinute={momentStart.format("mm")}
+              hours={start.format("HH")}
+              minutes={start.format("mm")}
             />
           </div>
           <div className="col-lg-5 col-12 vertical-offset-lg">
             <TimeInput
-              initialHour={momentFinish.format("HH")}
-              initialMinute={momentFinish.format("mm")}
+              hours={finish.format("HH")}
+              minutes={finish.format("mm")}
             />
           </div>
         </div>
       </div>
       <div id={blockId} className={`collapse ${collapsed ? "" : "show"}`}>
         <div className="card-body">
-          {activities.map(a => (
+          {/* {activities.map(a => (
             <ActivityView
               key={a.id}
+              {...a}
               subsystems={subsystems}
               onRemove={console.log}
-              subsystemId={a.subsystem.id}
-              comment={a.comment}
-              hours={a.hours}
-              minutes={a.minutes}
             />
-          ))}
+          ))} */}
           <div className="centered">
             <button
               type="button"
               className="btn btn-light no-box-shadow"
-              onClick={addActivity}
+              // onClick={addActivity}
             >
               ＋ Добавить деятельность
             </button>

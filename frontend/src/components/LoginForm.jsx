@@ -31,8 +31,6 @@ export default function LoginForm() {
         navigate(`/${date.isoWeekYear()}/${date.isoWeek()}`);
       }
     } catch (ex) {
-      console.log(ex);
-      console.log(ex.graphQLErrors);
       if (ex.graphQLErrors && ex.graphQLErrors.length > 0) {
         setErrors(ex.graphQLErrors.map(err => err.message));
       } else {

@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React from "react";
 import { useQuery } from "@apollo/react-hooks";
 import { useNavigate } from "@reach/router";
 import moment from "moment";
 
 import { LoadingView } from "../Loading";
 import DayView from "../DayView";
-import { SECTORS_GQL, WEEK_GQL } from "./queries";
+import { GET_SUBSYSTEMS } from "./graphql";
 
 import "./WeekView.css";
 import "../common.css";
@@ -17,32 +17,39 @@ function addDays(date, days) {
 }
 
 export default function WeekView({ year, week }) {
-  year = year || moment().isoWeekYear();
-  week = week || moment().isoWeek();
-
   const {
     loading: subsystemsLoading,
     error: subsystemsError,
     data: subsystemsData
-  } = useQuery(SECTORS_GQL);
+  } = useQuery(GET_SUBSYSTEMS);
 
-  const { loading, error, data } = useQuery(WEEK_GQL, {
-    variables: { year, week }
-  });
+  // const [createDefaultOrGetWorkDays, { loading, error, data }] = useMutation(
+  //   CREATE_DEFAULT_OR_GET_WORK_DAYS_MUTATION,
+  //   {
+  //     variables: {
+  //       since: dateToString(date),
+  //       to: dateToString(addDays(date, 6))
+  //     }
+  //   }
+  // );
+  // useEffect(() => {
+  //   createDefaultOrGetWorkDays();
+  // }, [year, week]);
 
   const navigate = useNavigate();
 
-  if (error || subsystemsError) {
+  if (subsystemsError) {
     navigate("/login");
   }
 
-  if (loading || subsystemsLoading) {
+  if (subsystemsLoading) {
     return <LoadingView />;
   }
 
-  const { firstDay, days } = data.week;
+  year = year || moment().isoWeekYear();
+  week = week || moment().isoWeek();
 
-  const date = moment()
+  const firstDayOfWeek = moment()
     .isoWeekYear(year)
     .isoWeek(week)
     .startOf("isoWeek")
@@ -50,7 +57,7 @@ export default function WeekView({ year, week }) {
 
   const changeWeek = offset => {
     const changer = () => {
-      const dt = moment(date).add(offset, "weeks");
+      const dt = moment(firstDayOfWeek).add(offset, "weeks");
       navigate(`/${dt.isoWeekYear()}/${dt.isoWeek()}`);
     };
     return changer;
@@ -89,18 +96,11 @@ export default function WeekView({ year, week }) {
         </div>
       </div>
       {Array.of(...Array(7)).map((_, idx) => {
-        const day = addDays(firstDay, idx);
-        const momentDay = moment(day).format("YYYYMMDD");
-        const workDay = days.find(
-          d => moment(d.day).format("YYYYMMDD") === momentDay
-        );
+        const day = addDays(firstDayOfWeek, idx);
         return (
           <DayView
-            key={momentDay}
-            date={day}
-            start={workDay ? workDay.start : null}
-            finish={workDay ? workDay.finish : null}
-            activities={workDay ? workDay.activities : []}
+            key={moment(day).format("YYYYMMDD")}
+            day={day}
             subsystems={subsystemsData.subsystems}
           />
         );
