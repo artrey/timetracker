@@ -158,6 +158,19 @@ export default function DayView({ day, subsystems }) {
     }
   };
 
+  const onAddActivityClick = async () => {
+    if (subsystems && subsystems.length && subsystems[0].id) {
+      onActivityUpdated({
+        subsystem: subsystems[0].id,
+        time: "00:00"
+      });
+    } else {
+      setErrors([
+        "Нет доступных подсистем для списания времени. Обратитесь к руководителю проекта"
+      ]);
+    }
+  };
+
   return (
     <div className="card day-card">
       <div className="card-header day-card-bg">
@@ -233,13 +246,7 @@ export default function DayView({ day, subsystems }) {
             <button
               type="button"
               className="btn btn-light no-box-shadow"
-              onClick={() =>
-                onActivityUpdated({
-                  subsystem:
-                    subsystems && subsystems.length && subsystems[0].id,
-                  time: "00:00"
-                })
-              }
+              onClick={onAddActivityClick}
             >
               ＋ Добавить деятельность
             </button>
