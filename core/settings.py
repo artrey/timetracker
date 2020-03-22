@@ -21,18 +21,20 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '5^4d0^(p@ps59s**vn*c9hpuygh29(45vrn_kz6&uj7*1@zk0!'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'secret-key')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = bool(os.environ.get('DEBUG', False))
 
-ALLOWED_HOSTS = ['*']
-CORS_ORIGIN_ALLOW_ALL = True
 
-INTERNAL_IPS = [
-    '127.0.0.1',
-    'localhost',
-]
+def comma_separated_list(string: str) -> list:
+    return [x.strip() for x in string.split(',') if x.strip()]
+
+
+ALLOWED_HOSTS = comma_separated_list(os.environ.get('ALLOWED_HOSTS', ''))
+CORS_ORIGIN_WHITELIST = comma_separated_list(
+    os.environ.get('CORS_ORIGIN_WHITELIST', '')
+)
 
 # Application definition
 INSTALLED_APPS = [
@@ -43,7 +45,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',  # Required for GraphiQL
     'corsheaders',
-    'debug_toolbar',
     'user',
     'graphene_django',
     'timetracker',
@@ -151,7 +152,20 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 if DEBUG:
+    ALLOWED_HOSTS = ['*']
+    CORS_ORIGIN_ALLOW_ALL = True
+
+    INTERNAL_IPS = [
+        '127.0.0.1',
+        'localhost',
+    ]
+
+    INSTALLED_APPS += [
+        'debug_toolbar',
+    ]
+
     import logging
     logging.basicConfig()
+
     import nplusone
     nplusone.show_nplusones()

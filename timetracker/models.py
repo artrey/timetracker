@@ -153,7 +153,7 @@ class Activity(BaseUuidModel):
     class Meta:
         verbose_name = _('деятельность')
         verbose_name_plural = _('деятельности')
-        ordering = 'time', 'created_at',
+        ordering = 'work_day__day', 'time', 'created_at',
 
     time = models.DurationField(
         verbose_name=_('Длительность'),

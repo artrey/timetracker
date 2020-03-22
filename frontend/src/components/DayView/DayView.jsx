@@ -235,7 +235,8 @@ export default function DayView({ day, subsystems }) {
               className="btn btn-light no-box-shadow"
               onClick={() =>
                 onActivityUpdated({
-                  subsystem: subsystems[0].id,
+                  subsystem:
+                    subsystems && subsystems.length && subsystems[0].id,
                   time: "00:00"
                 })
               }

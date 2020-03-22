@@ -107,8 +107,8 @@ class WorkDayAdmin(BaseAdmin):
 
 @admin.register(models.Activity)
 class ActivityAdmin(BaseAdmin):
-    list_display = 'user', 'time', 'day', 'created_at',
-    list_filter = 'work_day__user', 'work_day__day',
+    list_display = 'user', 'day', 'time', 'created_at',
+    list_filter = 'work_day__day', 'work_day__user',
 
     prefetch_fields = {
         'work_day': ('user',),
@@ -123,5 +123,5 @@ class ActivityAdmin(BaseAdmin):
 
     def day(self, obj: models.Activity) -> date:
         return obj.work_day.day
-    user.short_description = _('день')
-    user.admin_order_field = 'work_day__day'
+    day.short_description = _('день')
+    day.admin_order_field = 'work_day__day'
