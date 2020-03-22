@@ -13,5 +13,6 @@ __pycache__/
 
 # service assets
 data/
+static/
 *.sqlite3
 *.db
