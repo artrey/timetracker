@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef } from "react";
 
 import TimeInput from "../TimeInput";
 
@@ -9,13 +9,13 @@ export default function ActivityView({
   id,
   hours,
   minutes,
-  comment: initialComment,
+  comment,
   subsystem,
   subsystems,
   onRemove,
   onUpdate
 }) {
-  const [comment, setComment] = useState(initialComment);
+  const commentRef = useRef(null);
 
   const updateAction = updatedData =>
     onUpdate({
@@ -62,9 +62,9 @@ export default function ActivityView({
       <div className="card-body">
         <textarea
           className="form-control"
-          value={comment || ""}
-          onChange={e => setComment(e.target.value)}
-          onBlur={() => updateAction({ comment })}
+          defaultValue={comment}
+          ref={commentRef}
+          onBlur={() => updateAction({ comment: commentRef.current.value })}
         ></textarea>
       </div>
     </div>
