@@ -1,0 +1,26 @@
+.login-logo {
+  margin-top: 5em;
+  margin-bottom: 3em;
+  width: 60%;
+}
+
+.btn-login {
+  background-color: #007c7c;
+  color: white;
+}
+
+@media screen and (max-width: 991px) {
+  .login-logo {
+    margin-top: 3em;
+    margin-bottom: 2em;
+    width: 60%;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .login-logo {
+    margin-top: 3em;
+    margin-bottom: 1em;
+    width: 80%;
+  }
+}

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useQuery, useMutation } from "@apollo/react-hooks";
 import moment from "moment";
 
-import { LoadingView } from "../Loading";
+import { LoadingContent } from "../Loading";
 import TimeInput from "../TimeInput";
 import ActivityView from "../ActivityView";
 
@@ -95,7 +95,7 @@ export default function DayView({ day, subsystems }) {
   });
 
   if (loading) {
-    return <LoadingView width="10vw" height="10vh" />;
+    return <LoadingContent />;
   }
 
   if (error) {

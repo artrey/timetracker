@@ -25,7 +25,7 @@ function LoadingView({ ...props }) {
 
 function LoadingContent({ ...props }) {
   return (
-    <LoadingElement containerWidth="100%" containerHeight="100%" {...props} />
+    <LoadingElement containerWidth="100%" width="8vw" height="8vh" {...props} />
   );
 }
 
