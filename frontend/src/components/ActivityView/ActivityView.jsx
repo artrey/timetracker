@@ -17,7 +17,14 @@ export default function ActivityView({
 }) {
   const [comment, setComment] = useState(initialComment);
 
-  const updateAction = updatedData => onUpdate({ id, ...updatedData });
+  const updateAction = updatedData =>
+    onUpdate({
+      uid: id,
+      comment,
+      subsystem,
+      time: `${hours}:${minutes}`,
+      ...updatedData
+    });
 
   return (
     <div className="card activity-card">
@@ -25,8 +32,8 @@ export default function ActivityView({
         <div className="row align-items-center justify-content-around">
           <select
             className="col-lg-6 col-10 custom-select"
-            value={subsystem.id}
-            onChange={console.log}
+            value={subsystem}
+            onChange={e => updateAction({ subsystem: e.target.value })}
           >
             {subsystems.map(s => (
               <option key={s.id} value={s.id}>
@@ -38,15 +45,15 @@ export default function ActivityView({
             <TimeInput
               hours={hours}
               minutes={minutes}
-              onTimeChange={time => {
-                updateAction(time);
-              }}
+              onTimeChange={({ hour, minute }) =>
+                updateAction({ time: `${hour}:${minute}` })
+              }
             />
           </div>
           <button
             type="button"
             className="col-auto order-lg-2 order-1 btn btn-danger no-box-shadow"
-            onClick={onRemove}
+            onClick={() => onRemove(id)}
           >
             <b>✖</b>
           </button>
@@ -55,7 +62,7 @@ export default function ActivityView({
       <div className="card-body">
         <textarea
           className="form-control"
-          value={comment}
+          value={comment || ""}
           onChange={e => setComment(e.target.value)}
           onBlur={() => updateAction({ comment })}
         ></textarea>

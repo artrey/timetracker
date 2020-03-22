@@ -5,33 +5,8 @@ import graphene
 from graphql_jwt.decorators import login_required
 
 from timetracker import models
-from timetracker.graphql import models as ql_models, Queries
+from timetracker.graphql import models as ql_models
 from timetracker.utils import time2timedelta
-
-
-class CreateDefaultOrGetWorkDays(graphene.Mutation):
-    class Arguments:
-        since = graphene.Date(description=_('Начало'), required=True)
-        to = graphene.Date(description=_('Конец'), required=True)
-
-    work_days = graphene.List(ql_models.WorkDay, description=_('Рабочие дни'))
-
-    # @login_required
-    def mutate(self, info, since: datetime.date, to: datetime.date):
-        user = info.context.user
-        dt = since
-        while dt <= to:
-            obj, _ = models.WorkDay.objects.get_or_create(
-                day=dt, user=user, defaults={
-                    'start': datetime.time(),
-                    'finish': datetime.time(),
-                }
-            )
-            dt += datetime.timedelta(days=1)
-
-        return CreateDefaultOrGetWorkDays(
-            work_days=Queries().resolve_work_days(info, since, to)
-        )
 
 
 class UpdateWorkDay(graphene.Mutation):
@@ -46,11 +21,10 @@ class UpdateWorkDay(graphene.Mutation):
     def mutate(self, info, day: datetime.date, start: datetime.time,
                finish: datetime.time, **inputs):
         work_day, _ = models.WorkDay.objects.update_or_create(
-            day=day,
+            day=day, user=info.context.user,
             defaults={
                 'start': start,
                 'finish': finish,
-                'user': info.context.user
             }
         )
         return UpdateWorkDay(work_day=work_day)
@@ -72,7 +46,7 @@ class UpdateActivity(graphene.Mutation):
     def mutate(self, info, work_day: str, subsystem: str,
                time: datetime.time, **inputs):
         activity, _ = models.Activity.objects.update_or_create(
-            id=inputs.get('uid'),
+            id=inputs.get('uid'), work_day__user=info.context.user,
             defaults={
                 'time': time2timedelta(time),
                 'work_day_id': work_day,
@@ -83,7 +57,26 @@ class UpdateActivity(graphene.Mutation):
         return UpdateActivity(activity=activity)
 
 
+class RemoveActivity(graphene.Mutation):
+    class Arguments:
+        id = graphene.UUID(
+            description=_('Уникальный идентификатор'),
+            required=True
+        )
+
+    id = graphene.UUID()
+
+    # @login_required
+    def mutate(self, info, id: str, **inputs):
+        activity = models.Activity.objects.filter(
+            id=id, work_day__user=info.context.user
+        ).first()
+        if activity:
+            activity.delete()
+        return RemoveActivity(id=id if activity else None)
+
+
 class Mutations(graphene.ObjectType):
     update_work_day = UpdateWorkDay.Field()
     update_activity = UpdateActivity.Field()
-    create_default_or_get_work_days = CreateDefaultOrGetWorkDays.Field()
+    remove_activity = RemoveActivity.Field()

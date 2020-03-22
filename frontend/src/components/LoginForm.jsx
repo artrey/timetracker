@@ -5,6 +5,7 @@ import { useNavigate } from "@reach/router";
 import moment from "moment";
 
 import { setToken } from "../token";
+import { errorToMessages } from "../utils";
 
 export default function LoginForm() {
   const [username, setUsername] = useState("");
@@ -31,11 +32,7 @@ export default function LoginForm() {
         navigate(`/${date.isoWeekYear()}/${date.isoWeek()}`);
       }
     } catch (ex) {
-      if (ex.graphQLErrors && ex.graphQLErrors.length > 0) {
-        setErrors(ex.graphQLErrors.map(err => err.message));
-      } else {
-        setErrors([ex.message]);
-      }
+      setErrors(errorToMessages(ex));
     }
   }
 

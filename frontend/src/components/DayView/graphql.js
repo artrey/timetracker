@@ -11,7 +11,6 @@ export const GET_WORK_DAY = gql`
         id
         subsystem {
           id
-          fullName
         }
         hours
         minutes
@@ -45,7 +44,7 @@ export const UPDATE_WORK_DAY = gql`
 `;
 
 export const UPDATE_ACTIVITY = gql`
-  mutation UpdateWorkDay(
+  mutation UpdateActivity(
     $workDay: UUID!
     $subsystem: UUID!
     $time: Time!
@@ -63,12 +62,19 @@ export const UPDATE_ACTIVITY = gql`
         id
         subsystem {
           id
-          fullName
         }
         hours
         minutes
         comment
       }
+    }
+  }
+`;
+
+export const REMOVE_ACTIVITY = gql`
+  mutation RemoveActivity($id: UUID!) {
+    removeActivity(id: $id) {
+      id
     }
   }
 `;

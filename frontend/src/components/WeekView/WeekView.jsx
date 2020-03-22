@@ -23,23 +23,11 @@ export default function WeekView({ year, week }) {
     data: subsystemsData
   } = useQuery(GET_SUBSYSTEMS);
 
-  // const [createDefaultOrGetWorkDays, { loading, error, data }] = useMutation(
-  //   CREATE_DEFAULT_OR_GET_WORK_DAYS_MUTATION,
-  //   {
-  //     variables: {
-  //       since: dateToString(date),
-  //       to: dateToString(addDays(date, 6))
-  //     }
-  //   }
-  // );
-  // useEffect(() => {
-  //   createDefaultOrGetWorkDays();
-  // }, [year, week]);
-
   const navigate = useNavigate();
 
   if (subsystemsError) {
     navigate("/login");
+    return <LoadingView />;
   }
 
   if (subsystemsLoading) {
