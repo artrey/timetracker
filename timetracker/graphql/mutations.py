@@ -17,7 +17,7 @@ class UpdateWorkDay(graphene.Mutation):
 
     work_day = graphene.Field(ql_models.WorkDay)
 
-    # @login_required
+    @login_required
     def mutate(self, info, day: datetime.date, start: datetime.time,
                finish: datetime.time, **inputs):
         work_day, _ = models.WorkDay.objects.update_or_create(
@@ -42,7 +42,7 @@ class UpdateActivity(graphene.Mutation):
 
     activity = graphene.Field(ql_models.Activity)
 
-    # @login_required
+    @login_required
     def mutate(self, info, work_day: str, subsystem: str,
                time: datetime.time, **inputs):
         activity, _ = models.Activity.objects.update_or_create(
@@ -66,7 +66,7 @@ class RemoveActivity(graphene.Mutation):
 
     id = graphene.UUID()
 
-    # @login_required
+    @login_required
     def mutate(self, info, id: str, **inputs):
         activity = models.Activity.objects.filter(
             id=id, work_day__user=info.context.user

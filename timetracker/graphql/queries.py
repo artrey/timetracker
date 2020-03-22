@@ -24,7 +24,7 @@ class Queries(graphene.ObjectType):
         description=_('Список подсистем')
     )
 
-    # @login_required
+    @login_required
     def resolve_subsystems(self, info):
         user = info.context.user
         subsystems = list(models.Subsystem.objects.prefetch_related(
@@ -43,7 +43,7 @@ class Queries(graphene.ObjectType):
         description=_('Рабочий день')
     )
 
-    # @login_required
+    @login_required
     def resolve_work_day(self, info, day: datetime.date):
         user = info.context.user
         work_day = get_work_days(day=day, user=user).first()
