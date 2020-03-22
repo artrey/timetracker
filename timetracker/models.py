@@ -33,6 +33,7 @@ class Sector(models.Model):
     )
     users = models.ManyToManyField(
         get_user_model(), related_name='sectors',
+        db_index=True,
         verbose_name=_('Пользователи'), blank=True,
     )
 
@@ -64,6 +65,7 @@ class Project(BaseUuidModel):
     )
     users = models.ManyToManyField(
         get_user_model(), related_name='projects',
+        db_index=True,
         verbose_name=_('Пользователи'), blank=True,
     )
 
@@ -95,6 +97,7 @@ class Subsystem(BaseUuidModel):
     )
     users = models.ManyToManyField(
         get_user_model(), related_name='subsystems',
+        db_index=True,
         verbose_name=_('Пользователи'), blank=True,
     )
 
@@ -116,11 +119,12 @@ class WorkDay(BaseUuidModel):
         verbose_name_plural = _('рабочие дни')
         ordering = 'day', 'start', 'finish',
 
-    day = models.DateField(verbose_name=_('День'))
+    day = models.DateField(verbose_name=_('День'), db_index=True)
     start = models.TimeField(verbose_name=_('Начало'))
     finish = models.TimeField(verbose_name=_('Конец'))
     user = models.ForeignKey(
         get_user_model(), on_delete=models.CASCADE,
+        db_index=True,
         related_name='work_days',
         verbose_name=_('Пользователь'),
     )
@@ -161,6 +165,7 @@ class Activity(BaseUuidModel):
     )
     work_day = models.ForeignKey(
         WorkDay, on_delete=models.CASCADE,
+        db_index=True,
         related_name='activities',
         verbose_name=_('Рабочий день'),
     )
