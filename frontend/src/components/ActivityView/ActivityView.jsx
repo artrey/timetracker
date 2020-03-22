@@ -52,7 +52,7 @@ export default function ActivityView({
           </div>
           <button
             type="button"
-            className="col-auto order-lg-2 order-1 btn btn-danger no-box-shadow"
+            className="col-auto order-lg-2 order-1 btn btn-secondary no-box-shadow"
             onClick={() => onRemove(id)}
           >
             <b>✖</b>
