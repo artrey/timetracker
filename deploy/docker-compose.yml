@@ -14,7 +14,7 @@ services:
       POSTGRES_PASSWORD: timetracker
 
   backend:
-    image: artrey/tasktracker-backend
+    image: artrey/timetracker-backend
     restart: unless-stopped
     networks:
       - timetracker-network
