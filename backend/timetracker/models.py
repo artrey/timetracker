@@ -21,14 +21,14 @@ class BaseUuidModel(models.Model):
     )
 
 
-class Sector(models.Model):
+class Sector(BaseUuidModel):
     class Meta:
         verbose_name = _('направление')
         verbose_name_plural = _('направления')
         ordering = 'name',
 
     name = models.CharField(
-        primary_key=True, max_length=64,
+        max_length=64, db_index=True,
         verbose_name=_('Название'),
     )
     users = models.ManyToManyField(
