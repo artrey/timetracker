@@ -1,0 +1,8 @@
+# Ignore everything
+**
+
+# Allowed
+!public/
+!src/
+!package.json
+!service.conf

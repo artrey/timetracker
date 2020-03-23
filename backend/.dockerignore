@@ -1,0 +1,20 @@
+# Ignore everything
+**
+
+# Allowed
+!admin_site/
+!core/
+!frontend/public/
+!frontend/src/
+!frontend/package.json
+!timetracker/
+!user/
+!manage.py
+!requirements.txt
+!start.sh
+
+# Override allowed
+.idea/
+__pycache__/
+*.py[cod]
+*$py.class

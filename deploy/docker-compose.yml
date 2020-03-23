@@ -1,0 +1,53 @@
+version: '3'
+
+services:
+  postgres:
+    image: postgres:alpine
+    restart: unless-stopped
+    networks:
+      - timetracker-network
+    volumes:
+      - pgdata:/var/lib/postgresql/data:rw
+    environment: &pgcreds
+      POSTGRES_DB: timetracker
+      POSTGRES_USER: timetracker
+      POSTGRES_PASSWORD: timetracker
+
+  backend:
+    image: artrey/tasktracker-backend
+    restart: unless-stopped
+    networks:
+      - timetracker-network
+    volumes:
+      - django-static:/app/static:rw
+    depends_on:
+      - postgres
+    environment:
+      <<: *pgcreds
+      SECRET_KEY: secret-key
+      ALLOWED_HOSTS: localhost
+      CORS_ORIGIN_WHITELIST: http://localhost
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+
+  frontend:
+    image: artrey/timetracker-frontend
+    restart: unless-stopped
+    networks:
+      - timetracker-network
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./logs/:/var/log/nginx/
+      - django-static:/var/www/django/static:ro
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+
+volumes:
+  pgdata: {}
+  django-static: {}
+
+networks:
+  timetracker-network:
+    driver: bridge
