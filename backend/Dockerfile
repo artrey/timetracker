@@ -1,16 +1,10 @@
-FROM python:3-alpine
+FROM python:3-slim
 
 LABEL maintainer="Alexander Ivanov <oz.sasha.ivanov@gmail.com>"
 
 # System envoriments
 ENV LANG=C.UTF-8 \
   PYTHONUNBUFFERED=1
-
-RUN apk update && apk add --no-cache \
-  postgresql-dev \
-  gcc \
-  python3-dev \
-  musl-dev
 
 WORKDIR /app
 

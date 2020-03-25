@@ -2,4 +2,4 @@ django
 graphene-django
 django-graphql-jwt
 django-cors-headers
-psycopg2
+psycopg2-binary
