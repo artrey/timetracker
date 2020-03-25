@@ -1,3 +1,4 @@
+from abc import ABC
 from datetime import date
 
 from django.contrib import admin
@@ -6,6 +7,15 @@ from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
 
 from timetracker import models
+
+
+def custom_titled_filter(title):
+    class Wrapper(admin.FieldListFilter, ABC):
+        def __new__(cls, *args, **kwargs):
+            instance = admin.FieldListFilter.create(*args, **kwargs)
+            instance.title = title
+            return instance
+    return Wrapper
 
 
 class PrefetchQuerysetMixin(BaseModelAdmin):
@@ -75,7 +85,8 @@ class ProjectAdmin(BaseAdmin):
 @admin.register(models.Subsystem)
 class SubsystemAdmin(BaseAdmin):
     list_display = 'name', 'project_name', 'sector',
-    list_filter = 'project__name', 'project__sector',
+    list_filter = 'project__sector', \
+                  ('project__name', custom_titled_filter('Проект')),
     filter_horizontal = 'users',
 
     prefetch_fields = {

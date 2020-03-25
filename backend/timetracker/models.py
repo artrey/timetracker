@@ -1,4 +1,3 @@
-import uuid
 from datetime import timedelta
 
 from django.contrib.auth import get_user_model
@@ -6,19 +5,8 @@ from django.core.validators import MaxValueValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from core.models import BaseUuidModel
 from timetracker.utils import time2timedelta
-
-
-class BaseUuidModel(models.Model):
-    class Meta:
-        abstract = True
-
-    id = models.UUIDField(
-        primary_key=True,
-        default=uuid.uuid4,
-        editable=False,
-        verbose_name=_('Уникальный идентификатор'),
-    )
 
 
 class Sector(BaseUuidModel):
@@ -153,7 +141,7 @@ class Activity(BaseUuidModel):
     class Meta:
         verbose_name = _('деятельность')
         verbose_name_plural = _('деятельности')
-        ordering = 'work_day__day', 'time', 'created_at',
+        ordering = 'work_day__day', 'created_at',
 
     time = models.DurationField(
         verbose_name=_('Длительность'),
