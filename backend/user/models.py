@@ -6,7 +6,8 @@ from core.models import BaseUuidModel
 
 
 class User(AbstractUser):
-    pass
+    def get_report_name(self) -> str:
+        return f'{self.last_name} {self.first_name}'.strip() or self.username
 
 
 class Token(BaseUuidModel):
