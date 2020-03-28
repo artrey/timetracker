@@ -5,6 +5,7 @@ import moment from "moment";
 import { LoadingContent } from "../Loading";
 import TimeInput from "../TimeInput";
 import ActivityView from "../ActivityView";
+import { errorToMessages } from "../../utils";
 
 import {
   GET_WORK_DAY,
@@ -15,7 +16,6 @@ import {
 
 import "./DayView.css";
 import "../common.css";
-import { errorToMessages } from "../../utils";
 
 function dayToTitle(day) {
   switch (day) {
@@ -101,7 +101,7 @@ export default function DayView({ day, subsystems }) {
   if (error) {
     return (
       <div className="row">
-        <div class="col alert alert-danger centered" role="alert">
+        <div className="col alert alert-danger centered" role="alert">
           {errorToMessages(error).map(e => (
             <span key={e}>{e}</span>
           ))}

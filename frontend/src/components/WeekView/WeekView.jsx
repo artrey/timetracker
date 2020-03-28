@@ -4,17 +4,12 @@ import { useNavigate } from "@reach/router";
 import moment from "moment";
 
 import { LoadingView } from "../Loading";
+import CarouselUserView from "../CarouselUserView";
 import DayView from "../DayView";
 import { GET_SUBSYSTEMS } from "./graphql";
+import { firstDayOfWeek as fdow, addDays } from "../../date";
 
-import "./WeekView.css";
 import "../common.css";
-
-function addDays(date, days) {
-  const result = new Date(date);
-  result.setDate(result.getDate() + days);
-  return result;
-}
 
 export default function WeekView({ year, week }) {
   const {
@@ -34,14 +29,10 @@ export default function WeekView({ year, week }) {
     return <LoadingView />;
   }
 
-  year = year || moment().isoWeekYear();
-  week = week || moment().isoWeek();
+  year = +year || moment().isoWeekYear();
+  week = +week || moment().isoWeek();
 
-  const firstDayOfWeek = moment()
-    .isoWeekYear(year)
-    .isoWeek(week)
-    .startOf("isoWeek")
-    .toDate();
+  const firstDayOfWeek = fdow(year, week);
 
   const changeWeek = offset => {
     const changer = () => {
@@ -52,18 +43,11 @@ export default function WeekView({ year, week }) {
   };
 
   return (
-    <>
-      <div className="row align-items-center justify-content-center">
-        <div className="col-1">
-          <button
-            type="button"
-            className="btn btn-light change-week-button-left"
-            onClick={changeWeek(-1)}
-          >
-            <span className="change-week">{"<"}</span>
-          </button>
-        </div>
-        <div className="col-auto">
+    <CarouselUserView
+      onLeftClick={changeWeek(-1)}
+      onRightClick={changeWeek(1)}
+      headerContent={
+        <>
           <div className="row">
             <div className="col centered">{year} год</div>
           </div>
@@ -72,17 +56,18 @@ export default function WeekView({ year, week }) {
               <h2>{week} неделя</h2>
             </div>
           </div>
-        </div>
-        <div className="col-1">
-          <button
-            type="button"
-            className="btn btn-light"
-            onClick={changeWeek(1)}
-          >
-            <span className="change-week">{">"}</span>
-          </button>
-        </div>
-      </div>
+        </>
+      }
+      additionalMenuItems={
+        <button
+          className="dropdown-item"
+          type="button"
+          onClick={() => navigate("/reports/" + year)}
+        >
+          Отчеты
+        </button>
+      }
+    >
       {Array.of(...Array(7)).map((_, idx) => {
         const day = addDays(firstDayOfWeek, idx);
         return (
@@ -93,6 +78,6 @@ export default function WeekView({ year, week }) {
           />
         );
       })}
-    </>
+    </CarouselUserView>
   );
 }

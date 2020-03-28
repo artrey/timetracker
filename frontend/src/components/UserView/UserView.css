@@ -1,0 +1,25 @@
+.header {
+  margin-top: 0.3em;
+  margin-bottom: 0.3em;
+}
+
+@media screen and (max-width: 991px) {
+  .user-menu {
+    margin-bottom: 0.8em;
+    padding: 0;
+  }
+
+  .user-menu .right-side {
+    float: none;
+  }
+
+  .btn-user-info {
+    width: calc(100% - 1em);
+    margin-left: 0.5em;
+    margin-right: 0.5em;
+  }
+
+  .full-width {
+    width: 100%;
+  }
+}

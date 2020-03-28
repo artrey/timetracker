@@ -3,6 +3,7 @@ from user import graphql as user
 from timetracker import graphql as timetracker
 
 queries = [
+    user.Queries,
     timetracker.Queries,
 ]
 

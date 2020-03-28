@@ -22,7 +22,7 @@
     "react-times": "^3.1.12"
   },
   "scripts": {
-    "start": "REACT_APP_GRAPHQL_ENDPOINT=http://localhost:8000/graphql/ react-scripts start",
+    "start": "REACT_APP_SERVER_ENDPOINT=http://localhost:8000 react-scripts start",
     "build": "react-scripts build",
     "eject": "react-scripts eject"
   },
