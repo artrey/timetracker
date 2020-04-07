@@ -10,8 +10,18 @@
   box-shadow: none;
 }
 
+.no-padding {
+  padding: 0;
+}
+
 @media screen and (max-width: 991px) {
   .vertical-offset-lg {
     margin-top: 1em;
+  }
+}
+
+@media screen and (max-width: 577px) {
+  .sm-no-padding {
+    padding: 0;
   }
 }

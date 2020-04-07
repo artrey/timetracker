@@ -1,5 +1,5 @@
 import React from "react";
-import { useQuery } from "@apollo/react-hooks";
+import { useQuery, useApolloClient } from "@apollo/react-hooks";
 import { useNavigate } from "@reach/router";
 
 import { removeToken } from "../../token";
@@ -9,10 +9,16 @@ import { GET_ME } from "./graphql";
 import "./UserView.css";
 import "../common.css";
 
-export default function UserView({ header, additionalMenuItems, children }) {
+export default function UserView({
+  header,
+  leftBlock,
+  additionalMenuItems,
+  children,
+}) {
   const { loading, error, data } = useQuery(GET_ME);
 
   const navigate = useNavigate();
+  const apolloClient = useApolloClient();
 
   if (error) {
     navigate("/login");
@@ -25,16 +31,16 @@ export default function UserView({ header, additionalMenuItems, children }) {
 
   const onLogout = () => {
     removeToken();
+    apolloClient.clearStore();
     navigate("/login");
   };
 
   return (
     <>
       <div className="row align-items-center justify-content-around header">
-        <div className="offset-lg-3 col-lg-6 col-12 order-lg-1 order-2">
-          {header}
-        </div>
-        <div className="col-lg-3 order-lg-2 col-12 order-1 user-menu">
+        <div className="col-lg-3 order-lg-1 col-12 order-3">{leftBlock}</div>
+        <div className="col-lg-6 col-12 order-lg-2 order-2">{header}</div>
+        <div className="col-lg-3 order-lg-3 col-12 order-1 user-menu">
           <div className="btn-group right-side btn-user-info">
             <button
               type="button"

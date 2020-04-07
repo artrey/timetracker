@@ -1,5 +1,6 @@
 import React from "react";
 import { useQuery } from "@apollo/react-hooks";
+import { useSelector } from "react-redux";
 import { useNavigate } from "@reach/router";
 import moment from "moment";
 
@@ -7,18 +8,26 @@ import { LoadingView } from "../Loading";
 import CarouselUserView from "../CarouselUserView";
 import DayView from "../DayView";
 import { GET_SUBSYSTEMS } from "./graphql";
-import { firstDayOfWeek as fdow, addDays } from "../../date";
+import {
+  firstDayOfWeek as fdow,
+  addDays,
+  minutesToString,
+  dateToString,
+} from "../../date";
 
 import "../common.css";
+import "./WeekView.css";
 
 export default function WeekView({ year, week }) {
   const {
     loading: subsystemsLoading,
     error: subsystemsError,
-    data: subsystemsData
+    data: subsystemsData,
   } = useQuery(GET_SUBSYSTEMS);
 
   const navigate = useNavigate();
+
+  const workTimes = useSelector((state) => state);
 
   if (subsystemsError) {
     navigate("/login");
@@ -34,7 +43,7 @@ export default function WeekView({ year, week }) {
 
   const firstDayOfWeek = fdow(year, week);
 
-  const changeWeek = offset => {
+  const changeWeek = (offset) => {
     const changer = () => {
       const dt = moment(firstDayOfWeek).add(offset, "weeks");
       navigate(`/${dt.isoWeekYear()}/${dt.isoWeek()}`);
@@ -42,8 +51,18 @@ export default function WeekView({ year, week }) {
     return changer;
   };
 
+  const totalWorkTime = Array.of(...Array(7))
+    .map((_, idx) => {
+      const day = dateToString(addDays(firstDayOfWeek, idx));
+      return workTimes[day] || 0;
+    })
+    .reduce((t, v) => t + v);
+
   return (
     <CarouselUserView
+      leftBlock={
+        <h3 className="total-time">{minutesToString(totalWorkTime)}</h3>
+      }
       onLeftClick={changeWeek(-1)}
       onRightClick={changeWeek(1)}
       headerContent={

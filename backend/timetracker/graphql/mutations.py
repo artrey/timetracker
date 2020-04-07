@@ -9,27 +9,6 @@ from timetracker.graphql import models as ql_models
 from timetracker.utils import time2timedelta
 
 
-class UpdateWorkDay(graphene.Mutation):
-    class Arguments:
-        day = graphene.Date(description=_('День'), required=True)
-        start = graphene.Time(description=_('Время начала'), required=True)
-        finish = graphene.Time(description=_('Время окончания'), required=True)
-
-    work_day = graphene.Field(ql_models.WorkDay)
-
-    @login_required
-    def mutate(self, info, day: datetime.date, start: datetime.time,
-               finish: datetime.time, **inputs):
-        work_day, _ = models.WorkDay.objects.update_or_create(
-            day=day, user=info.context.user,
-            defaults={
-                'start': start,
-                'finish': finish,
-            }
-        )
-        return UpdateWorkDay(work_day=work_day)
-
-
 class UpdateActivity(graphene.Mutation):
     class Arguments:
         work_day = graphene.UUID(description=_('Рабочий день'), required=True)
@@ -77,6 +56,5 @@ class RemoveActivity(graphene.Mutation):
 
 
 class Mutations(graphene.ObjectType):
-    update_work_day = UpdateWorkDay.Field()
     update_activity = UpdateActivity.Field()
     remove_activity = RemoveActivity.Field()

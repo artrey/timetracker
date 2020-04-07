@@ -27,15 +27,13 @@ class Queries(graphene.ObjectType):
     @login_required
     def resolve_subsystems(self, info):
         user = info.context.user
-        subsystems = list(models.Subsystem.objects.prefetch_related(
+        return models.Subsystem.objects.prefetch_related(
             'project__sector__users', 'project__users', 'users'
         ).filter(
             Q(project__sector__users=user) |
             Q(project__users=user) |
             Q(users=user)
-        ).order_by('project__sector__name', 'project__name', 'name'))
-        return [ql_models.Subsystem(id=s.id, full_name=s.full_name)
-                for s in subsystems]
+        ).distinct().order_by('project__sector__name', 'project__name', 'name')
 
     work_day = graphene.Field(
         ql_models.WorkDay,

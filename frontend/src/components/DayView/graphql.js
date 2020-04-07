@@ -20,29 +20,6 @@ export const GET_WORK_DAY = gql`
   }
 `;
 
-export const UPDATE_WORK_DAY = gql`
-  mutation UpdateWorkDay($day: Date!, $start: Time!, $finish: Time!) {
-    updateWorkDay(day: $day, start: $start, finish: $finish) {
-      workDay {
-        id
-        day
-        start
-        finish
-        activities {
-          id
-          subsystem {
-            id
-            fullName
-          }
-          hours
-          minutes
-          comment
-        }
-      }
-    }
-  }
-`;
-
 export const UPDATE_ACTIVITY = gql`
   mutation UpdateActivity(
     $workDay: UUID!

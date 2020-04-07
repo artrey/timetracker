@@ -1,0 +1,10 @@
+.total-time {
+  margin: 0;
+}
+
+@media screen and (max-width: 991px) {
+  .total-time {
+    margin-top: 0.4em;
+    text-align: center;
+  }
+}

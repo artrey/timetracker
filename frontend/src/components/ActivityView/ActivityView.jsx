@@ -13,17 +13,17 @@ export default function ActivityView({
   subsystem,
   subsystems,
   onRemove,
-  onUpdate
+  onUpdate,
 }) {
   const commentRef = useRef(null);
 
-  const updateAction = updatedData =>
+  const updateAction = (updatedData) =>
     onUpdate({
       uid: id,
       comment,
       subsystem,
       time: `${hours}:${minutes}`,
-      ...updatedData
+      ...updatedData,
     });
 
   return (
@@ -33,15 +33,15 @@ export default function ActivityView({
           <select
             className="col-lg-6 col-10 custom-select"
             value={subsystem}
-            onChange={e => updateAction({ subsystem: e.target.value })}
+            onChange={(e) => updateAction({ subsystem: e.target.value })}
           >
-            {subsystems.map(s => (
+            {subsystems.map((s) => (
               <option key={s.id} value={s.id}>
                 {s.fullName}
               </option>
             ))}
           </select>
-          <div className="col-lg-5 col-12 order-lg-1 order-2 vertical-offset-lg">
+          <div className="col-lg-5 col-12 order-lg-1 order-2 vertical-offset-lg sm-no-padding">
             <TimeInput
               hours={hours}
               minutes={minutes}

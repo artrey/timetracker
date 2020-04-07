@@ -2,10 +2,6 @@
   margin-top: 1em;
 }
 
-.week-day-line {
-  padding: 0;
-}
-
 .expander-symbol {
   transform: rotate(-90deg);
   font-size: 1.5em;

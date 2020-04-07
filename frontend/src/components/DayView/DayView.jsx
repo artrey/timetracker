@@ -1,83 +1,56 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@apollo/react-hooks";
+import { useSelector, useDispatch } from "react-redux";
 import moment from "moment";
 
 import { LoadingContent } from "../Loading";
-import TimeInput from "../TimeInput";
 import ActivityView from "../ActivityView";
 import { errorToMessages } from "../../utils";
+import { dateToString, dayToTitle, minutesToString } from "../../date";
 
-import {
-  GET_WORK_DAY,
-  UPDATE_WORK_DAY,
-  UPDATE_ACTIVITY,
-  REMOVE_ACTIVITY
-} from "./graphql";
+import { WORK_DAY_TIME_CHANGED } from "../../redux/actions";
+import { GET_WORK_DAY, UPDATE_ACTIVITY, REMOVE_ACTIVITY } from "./graphql";
 
 import "./DayView.css";
 import "../common.css";
 
-function dayToTitle(day) {
-  switch (day) {
-    case 1:
-      return "Понедельник";
-    case 2:
-      return "Вторник";
-    case 3:
-      return "Среда";
-    case 4:
-      return "Четверг";
-    case 5:
-      return "Пятница";
-    case 6:
-      return "Суббота";
-    case 0:
-      return "Воскресение";
-    default:
-      return "ВЫХОДНОЙ :)";
-  }
-}
-
-function dateToString(date) {
-  return moment(date).format("YYYY-MM-DD");
-}
-
 export default function DayView({ day, subsystems }) {
   const [errors, setErrors] = useState([]);
 
+  const dayString = dateToString(day);
+
   const { loading, error, data } = useQuery(GET_WORK_DAY, {
-    variables: { day: dateToString(day) }
+    variables: { day: dateToString(day) },
   });
-  const [updateWorkDay] = useMutation(UPDATE_WORK_DAY);
   const [updateActivity] = useMutation(UPDATE_ACTIVITY, {
     update(cache, { data: { updateActivity } }) {
-      const dayString = dateToString(day);
       const { workDay } = cache.readQuery({
         query: GET_WORK_DAY,
-        variables: { day: dayString }
+        variables: { day: dayString },
       });
-      if (!workDay.activities.find(a => a.id === updateActivity.activity.id)) {
+      if (
+        !workDay.activities.find((a) => a.id === updateActivity.activity.id)
+      ) {
         cache.writeQuery({
           query: GET_WORK_DAY,
           variables: { day: dayString },
           data: {
             workDay: {
               ...workDay,
-              activities: [...workDay.activities, updateActivity.activity]
-            }
-          }
+              activities: [...workDay.activities, updateActivity.activity],
+            },
+          },
         });
       }
-    }
+    },
   });
   const [removeActivity] = useMutation(REMOVE_ACTIVITY, {
     update(cache, { data: { removeActivity } }) {
-      const dayString = dateToString(day);
       const { workDay } = cache.readQuery({
         query: GET_WORK_DAY,
-        variables: { day: dayString }
+        variables: { day: dayString },
       });
-      if (workDay.activities.find(a => a.id === removeActivity.id)) {
+      if (workDay.activities.find((a) => a.id === removeActivity.id)) {
         cache.writeQuery({
           query: GET_WORK_DAY,
           variables: { day: dayString },
@@ -85,14 +58,30 @@ export default function DayView({ day, subsystems }) {
             workDay: {
               ...workDay,
               activities: workDay.activities.filter(
-                a => a.id !== removeActivity.id
-              )
-            }
-          }
+                (a) => a.id !== removeActivity.id
+              ),
+            },
+          },
         });
       }
-    }
+    },
   });
+
+  const totalWorkTime = useSelector((state) => state[dayString]);
+  const dispatch = useDispatch();
+  useEffect(() => {
+    if (data && data.workDay && data.workDay.activities)
+      dispatch({
+        type: WORK_DAY_TIME_CHANGED,
+        payload: {
+          day: data.workDay.day,
+          time: data.workDay.activities.reduce(
+            (total, a) => total + a.hours * 60 + a.minutes,
+            0
+          ),
+        },
+      });
+  }, [dispatch, data]);
 
   if (loading) {
     return <LoadingContent />;
@@ -102,7 +91,7 @@ export default function DayView({ day, subsystems }) {
     return (
       <div className="row">
         <div className="col alert alert-danger centered" role="alert">
-          {errorToMessages(error).map(e => (
+          {errorToMessages(error).map((e) => (
             <span key={e}>{e}</span>
           ))}
         </div>
@@ -114,44 +103,26 @@ export default function DayView({ day, subsystems }) {
   const momentDt = dt.format("YYYYMMDD");
   const collapsed = moment().format("YYYYMMDD") !== momentDt;
   const blockId = `block-${momentDt}`;
-  const start = moment(data.workDay.start, "HH:mm:ss");
-  const finish = moment(data.workDay.finish, "HH:mm:ss");
 
-  const updateWorkDayTime = async time => {
-    try {
-      setErrors([]);
-      await updateWorkDay({
-        variables: {
-          day: dateToString(day),
-          start: data.workDay.start,
-          finish: data.workDay.finish,
-          ...time
-        }
-      });
-    } catch (ex) {
-      setErrors(errorToMessages(ex));
-    }
-  };
-
-  const onActivityUpdated = async activityData => {
+  const onActivityUpdated = async (activityData) => {
     try {
       setErrors([]);
       await updateActivity({
         variables: {
           workDay: data.workDay.id,
-          ...activityData
-        }
+          ...activityData,
+        },
       });
     } catch (ex) {
       setErrors(errorToMessages(ex));
     }
   };
 
-  const onActivityRemoved = async id => {
+  const onActivityRemoved = async (id) => {
     try {
       setErrors([]);
       await removeActivity({
-        variables: { id }
+        variables: { id },
       });
     } catch (ex) {
       setErrors(errorToMessages(ex));
@@ -162,11 +133,11 @@ export default function DayView({ day, subsystems }) {
     if (subsystems && subsystems.length && subsystems[0].id) {
       onActivityUpdated({
         subsystem: subsystems[0].id,
-        time: "00:00"
+        time: "00:00",
       });
     } else {
       setErrors([
-        "Нет доступных подсистем для списания времени. Обратитесь к руководителю проекта"
+        "Нет доступных подсистем для списания времени. Обратитесь к руководителю проекта",
       ]);
     }
   };
@@ -177,62 +148,41 @@ export default function DayView({ day, subsystems }) {
         {errors.length > 0 && (
           <div className="row">
             <div className="col alert alert-danger centered" role="alert">
-              {errors.map(e => (
+              {errors.map((e) => (
                 <span key={e}>{e}</span>
               ))}
             </div>
           </div>
         )}
         <div className="row align-items-center">
-          <div className="col-lg-2 col-12">
-            <div className="row">
-              <button
-                type="button"
-                className={`btn btn-transparent col no-box-shadow ${
-                  collapsed ? "collapsed" : ""
-                }`}
-                data-toggle="collapse"
-                href={`#${blockId}`}
-                aria-expanded={collapsed ? "false" : "true"}
-                aria-controls={blockId}
-              >
-                <div className="row align-items-center">
-                  <div className="col-auto expander-symbol">»</div>
-                  <div className="col-11 row week-day-line">
-                    <div className="col-lg-12 col-6">
-                      {dayToTitle(dt.day())}
-                    </div>
-                    <div className="col-lg-12 col-6">
-                      {dt.format("DD-MM-YYYY")}
-                    </div>
-                  </div>
+          <button
+            type="button"
+            className={`btn btn-transparent col no-box-shadow ${
+              collapsed ? "collapsed" : ""
+            }`}
+            data-toggle="collapse"
+            href={`#${blockId}`}
+            aria-expanded={collapsed ? "false" : "true"}
+            aria-controls={blockId}
+          >
+            <div className="row align-items-center justify-content-between">
+              <div className="col-auto expander-symbol">»</div>
+              <div className="col row align-items-center justify-content-between">
+                <div className="col-auto no-padding">
+                  {dayToTitle(dt.day())}
                 </div>
-              </button>
+                <div className="col-auto no-padding">
+                  {dt.format("DD-MM-YYYY")}
+                </div>
+              </div>
+              <div className="col-auto">{minutesToString(totalWorkTime)}</div>
             </div>
-          </div>
-          <div className="col-lg-5 col-12 vertical-offset-lg">
-            <TimeInput
-              hours={start.format("HH")}
-              minutes={start.format("mm")}
-              onTimeChange={({ hour, minute }) =>
-                updateWorkDayTime({ start: `${hour}:${minute}` })
-              }
-            />
-          </div>
-          <div className="col-lg-5 col-12 vertical-offset-lg">
-            <TimeInput
-              hours={finish.format("HH")}
-              minutes={finish.format("mm")}
-              onTimeChange={({ hour, minute }) =>
-                updateWorkDayTime({ finish: `${hour}:${minute}` })
-              }
-            />
-          </div>
+          </button>
         </div>
       </div>
       <div id={blockId} className={`collapse ${collapsed ? "" : "show"}`}>
         <div className="card-body">
-          {data.workDay.activities.map(a => (
+          {data.workDay.activities.map((a) => (
             <ActivityView
               key={a.id}
               {...a}

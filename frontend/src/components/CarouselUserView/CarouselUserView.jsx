@@ -6,11 +6,12 @@ import "./CarouselUserView.css";
 import "../common.css";
 
 export default function CarouselUserView({
+  leftBlock,
   onLeftClick,
   onRightClick,
   headerContent,
   additionalMenuItems,
-  children
+  children,
 }) {
   const header = (
     <div className="row align-items-center justify-content-center">
@@ -33,7 +34,11 @@ export default function CarouselUserView({
   );
 
   return (
-    <UserView header={header} additionalMenuItems={additionalMenuItems}>
+    <UserView
+      header={header}
+      leftBlock={leftBlock}
+      additionalMenuItems={additionalMenuItems}
+    >
       {children}
     </UserView>
   );
